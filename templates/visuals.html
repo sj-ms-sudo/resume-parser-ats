@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Admin Visuals</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 30px;
+    }
+    h2 {
+      text-align: center;
+    }
+    svg {
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    .bar {
+      fill: steelblue;
+      transition: 0.3s;
+    }
+    .bar:hover {
+      fill: orange;
+    }
+    .axis text {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📊 Candidate ATS Scores</h2>
+  <svg width="700" height="400"></svg>
+
+  <script>
+    // Data from Flask (passed as JSON string)
+    const data = {{ data|safe }};  
+    // Example: [["John", 75], ["Alice", 60], ...]
+
+    const svg = d3.select("svg"),
+          margin = {top: 40, right: 20, bottom: 50, left: 60},
+          width = +svg.attr("width") - margin.left - margin.right,
+          height = +svg.attr("height") - margin.top - margin.bottom;
+
+    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // X and Y scales
+    const x = d3.scaleBand()
+      .domain(data.map(d => d[0]))
+      .range([0, width])
+      .padding(0.2);
+
+    const y = d3.scaleLinear()
+      .domain([0, 100])  // ATS is percentage
+      .range([height, 0]);
+
+    // Bars
+    g.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", d => x(d[0]))
+      .attr("y", d => y(d[1]))
+      .attr("width", x.bandwidth())
+      .attr("height", d => height - y(d[1]));
+
+    // X Axis
+    g.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .attr("transform", "rotate(-40)")
+      .style("text-anchor", "end");
+
+    // Y Axis
+    g.append("g").call(d3.axisLeft(y));
+
+    // Chart title
+    svg.append("text")
+      .attr("x", width / 2 + margin.left)
+      .attr("y", 20)
+      .attr("text-anchor", "middle")
+      .style("font-size", "18px")
+      .style("font-weight", "bold")
+      .text("ATS Scores per Candidate");
+  </script>
+</body>
+</html>

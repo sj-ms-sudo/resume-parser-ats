@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <title>
+            Dashboad
+        </title>
+    </head>
+    <body>
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Skills</th>
+                <th>Ats score</th>
+            </tr>
+            <tr>
+                <td>{{id["Name"]}}</td>
+                <td>{{id["Email"]}}</td>
+                <td>{{id["Phone"]}}</td>
+                <td>{{id["Skills"]}}</td>
+                <td>{{id["ats"]}}</td>
+            </tr>
+        </table>
+    </body>
+</html>
